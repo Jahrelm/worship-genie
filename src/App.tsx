@@ -12,6 +12,7 @@ import Songs from "./pages/Songs";
 import NotFound from "./pages/NotFound";
 import BibleReader from "./components/BibleReader";
 import SongFormatter from "./components/SongFormatter";
+import ServicePlanner from "./pages/ServicePlanner";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/bible/:bookId/:chapter" element={<BibleReader />} />
           <Route path="/songs" element={<Songs />} />
           <Route path="/songs/:songId" element={<SongFormatter />} />
+          <Route path="/planner" element={<ServicePlanner />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
