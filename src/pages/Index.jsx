@@ -1,8 +1,7 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Book, Music, ChevronRight, Search, Coffee, Heart, Users, Calendar } from 'lucide-react';
-import { getPopularPassages } from '../lib/bibleData.jsx';
+import { getPopularPassages } from '../services/bibleApi';
 import { getAllSongs } from '../lib/songData';
 
 const Feature = ({ icon, title, description, link, linkText }) => (
@@ -23,8 +22,26 @@ const Feature = ({ icon, title, description, link, linkText }) => (
 );
 
 const Index = () => {
-  const popularPassages = getPopularPassages();
+  const [popularPassages, setPopularPassages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const recentSongs = getAllSongs().slice(0, 3);
+  
+  useEffect(() => {
+    const loadPopularPassages = async () => {
+      try {
+        setIsLoading(true);
+        const passages = await getPopularPassages();
+        setPopularPassages(passages);
+      } catch (error) {
+        console.error("Error loading popular passages:", error);
+        setPopularPassages([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadPopularPassages();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[url('https://images.unsplash.com/photo-1492321936769-b49830bc1d1e?auto=format&fit=crop&w=2000&q=80')] bg-fixed bg-cover bg-center">
@@ -133,19 +150,25 @@ const Index = () => {
                 Popular Passages
               </h2>
               <div className="border border-amber-200 rounded-lg overflow-hidden bg-white/80">
-                <ul className="divide-y divide-amber-100">
-                  {popularPassages.map(passage => (
-                    <li key={passage.id}>
-                      <Link 
-                        to={`/bible/${passage.bookId}/${passage.chapter}`}
-                        className="block px-6 py-4 hover:bg-amber-50 transition-standard"
-                      >
-                        <span className="font-medium">{passage.reference}</span>
-                        <ChevronRight className="w-4 h-4 float-right mt-1 text-amber-600" />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                {isLoading ? (
+                  <div className="flex justify-center items-center py-12">
+                    <div className="animate-pulse text-amber-600">Loading passages...</div>
+                  </div>
+                ) : (
+                  <ul className="divide-y divide-amber-100">
+                    {popularPassages.map(passage => (
+                      <li key={passage.id}>
+                        <Link 
+                          to={`/bible/${passage.bookId}/${passage.chapter}`}
+                          className="block px-6 py-4 hover:bg-amber-50 transition-standard"
+                        >
+                          <span className="font-medium">{passage.reference}</span>
+                          <ChevronRight className="w-4 h-4 float-right mt-1 text-amber-600" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
 

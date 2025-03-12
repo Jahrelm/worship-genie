@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Book } from 'lucide-react';
-import { getAllBooks, getBook, getChapter } from '../lib/bibleData.jsx';
+import { fetchAllBooks, fetchBook, fetchBiblePassage } from '../services/bibleApi';
 import Navigation from './Navigation';
+import { useToast } from "@/components/ui/use-toast";
 
 const BibleReader = () => {
   const { bookId, chapter } = useParams();
@@ -12,22 +12,41 @@ const BibleReader = () => {
   const [currentChapter, setCurrentChapter] = useState(null);
   const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   const [isChapterDropdownOpen, setIsChapterDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   useEffect(() => {
-    const allBooks = getAllBooks();
-    setBooks(allBooks);
-    
-    if (bookId) {
-      const book = getBook(bookId);
-      setCurrentBook(book);
-      
-      if (chapter && book) {
-        const chapterData = getChapter(bookId, chapter);
-        setCurrentChapter(chapterData);
+    const loadBibleData = async () => {
+      try {
+        setIsLoading(true);
+        
+        const allBooks = await fetchAllBooks();
+        setBooks(allBooks);
+        
+        if (bookId) {
+          const book = await fetchBook(bookId);
+          setCurrentBook(book);
+          
+          if (chapter && book) {
+            const chapterData = await fetchBiblePassage(bookId, chapter);
+            setCurrentChapter(chapterData);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading Bible data:", error);
+        toast({
+          title: "Error",
+          description: "There was a problem loading the Bible content.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }, [bookId, chapter]);
+    };
+    
+    loadBibleData();
+  }, [bookId, chapter, toast]);
   
   const handleBookSelect = (selectedBookId) => {
     setIsBookDropdownOpen(false);
@@ -76,10 +95,21 @@ const BibleReader = () => {
     return null;
   };
   
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-6 pt-24 pb-16 h-screen flex items-center justify-center">
+        <div className="text-center animate-pulse">
+          <Book className="w-12 h-12 mx-auto mb-4 text-amber-600/70" />
+          <h2 className="text-xl font-medium">Loading Bible content...</h2>
+        </div>
+      </div>
+    );
+  }
+  
   if (!currentBook || !currentChapter) {
     return (
       <div className="container mx-auto px-6 pt-24 pb-16 h-screen flex items-center justify-center">
-        <div className="text-center animate-pulse-gentle">
+        <div className="text-center">
           <Book className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
           <h2 className="text-xl font-medium">Select a book to start reading</h2>
           <p className="text-muted-foreground mt-2">Navigate to a specific passage in the Bible</p>
