@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Book } from 'lucide-react';
-import { getAllBooks, getBook, getChapter } from '../lib/bibleData';
+import { getAllBooks, getBook, getChapter } from '../lib/bibleData.jsx';
 import Navigation from './Navigation';
 
 const BibleReader = () => {

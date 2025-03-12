@@ -46,7 +46,7 @@ export const bibleData = {
           verses: [
             { number: 1, text: 'The LORD is my shepherd, I lack nothing.' },
             { number: 2, text: 'He makes me lie down in green pastures, he leads me beside quiet waters,' },
-            { number: 3, text: 'he refreshes my soul. He guides me along the right paths for his name's sake.' },
+            { number: 3, text: 'he refreshes my soul. He guides me along the right paths for his name\'s sake.' },
             { number: 4, text: 'Even though I walk through the darkest valley, I will fear no evil, for you are with me; your rod and your staff, they comfort me.' },
             // Add more verses as needed
           ]

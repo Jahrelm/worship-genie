@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Book, Music, ChevronRight, Search, Coffee } from 'lucide-react';
-import { getPopularPassages } from '../lib/bibleData';
+import { getPopularPassages } from '../lib/bibleData.jsx';
 import { getAllSongs } from '../lib/songData';
 
 const Feature = ({ icon, title, description, link, linkText }) => (
